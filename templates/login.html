@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>FlyHigh</title>
+        <link rel="icon" type="image/png" href="static/css/logo.png" alt="FlyHigh">
+        <link rel="stylesheet" href="static/css/login.css">
+        <script src="https://kit.fontawesome.com/00ac4f1850.js" crossorigin="anonymous"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Allura&display=swap" rel="stylesheet">
+        <script src="/static/js/login.js"></script>
+    </head>
+    <body>
+        <div class="total">
+            <div  class="letter">
+                <h1>FlyHigh</h1>
+            </div>
+            <div class="plane">
+                <image src="static/css/plane.png" alt="a plane"></image>
+            </div>
+        </div> 
+
+        <div class="container">
+            <div class="form-box">
+                <h1>Sign in</h1>
+                <form method="POST" action="/login">
+                    <div class="input-group"> <div class="input-field" id="namef"> 
+                        <i class="fa-regular fa-user"></i> 
+                        <input type="text" name="username" placeholder="Username">
+                    </div> 
+                    <div class="input-field"> 
+                        <i class="fa-solid fa-envelope-circle-check"></i> 
+                        <input type="email" name="email "placeholder="Email"> 
+                    </div>
+                    <div class="input-field"> 
+                        <i class="fa-solid fa-key"></i> <input type="password" name="password" placeholder="Password">
+                     </div> 
+                    </div> 
+                    <div class="signbutton"> 
+                        <div class="buttonfld"> <button type="submit" id="sgnbttn">Sign In</button> 
+                        </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                Made with <i class="fa-solid fa-heart"></i> by Debosmita Bedajna.
+            </p>
+        </div>
+    </body>
+</html>
