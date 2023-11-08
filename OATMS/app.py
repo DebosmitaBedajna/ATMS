@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session,jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User
 from requests import post
@@ -8,6 +8,7 @@ app = Flask(__name__, static_url_path='/static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/debosmitabedajna/Desktop/bkatms/OATMS/instance/users.db'
 db = SQLAlchemy(app)
 app.secret_key = 'secretivekeyagain'
+chat_messages = []
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -17,7 +18,6 @@ class User(db.Model):
  
 @app.route('/')
 def index():
-    weatherData()
     return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
@@ -36,7 +36,8 @@ def login_post():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    wd = weatherData()
+    return render_template('dashboard.html', newvar=wd)
 
 @app.route('/logout')
 def logout():
@@ -49,6 +50,19 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
 
 def weatherData():
-    url = "https://api.weatherapi.com/v1/current.json?key=2eb13cf49a934aabb3b74217230611&q=Kolkata&aqi=yes"
-    data = post(url)
-    weatherdata = data.json()
+    #url = "https://api.weatherapi.com/v1/current.json?key=2eb13cf49a934aabb3b74217230611&q=Kolkata&aqi=yes"
+    #data = post(url)
+
+    return jsonify({}) #data.json()
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    message = request.form.get('message')
+    if 'username' in session:
+        username = session['username']
+        chat_messages.append(f'{username}: {message}')
+    return jsonify({'status': 'success'})
+
+@app.route('/get_messages', methods=['GET'])
+def get_messages():
+    return jsonify({'messages': chat_messages})

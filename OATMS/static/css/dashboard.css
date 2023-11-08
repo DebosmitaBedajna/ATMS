@@ -1,29 +1,218 @@
-*{
-    background: linear-gradient(to right,#011922, #01417d);
-    color: aliceblue;
+* {
+  background-color: rgb(0, 8, 28);
+  color: aliceblue;
 }
-ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: #333;
-    position: fixed;
-    top: 0;
-    width: 100%;
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.Navigation{
+  position: fixed;
+  width: 99%;
+  top: 0px;
+  z-index: 1;
+}
+
+.weather-data {
+  display: flex;
+  justify-content: space-between; 
+  flex: 1;
+  width: 100%;
+  height: 45vh;
+  list-style: none;
+}
+
+.location,
+.condition,
+.details,
+.air-quality {
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+  margin: 0 10px;
+}
+
+
+.location p,
+.condition p,
+details p {
+  margin: 5px 0;
+}
+
+img {
+  max-width: 50px;
+}
+
+.AQ {
+  list-style: none;
+  padding: 0;
+}
+
+.air-quality ul li {
+  margin: 5px 0;
+}
+
+footer{
+  color: rgb(247, 247, 247);
+  background: rgb(0, 8, 28);;
+  text-align: center;
+  padding: 1rem 0;
+  bottom: 0;
+  width: 100%;
+  font-size: 14px ;
+}
+footer i{
+  color: crimson;
+}
+
+.weather-data div{
+padding: 1rem 2rem  ;
+
+}
+
+
+.chatbox-container {
+  position: fixed;
+  bottom: 1vh;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 5px;
+  width: 250px; 
+  padding: 10px;
+  z-index: 999; 
+}
+
+#chatbut{
+  background-color: rgb(0, 8, 28);
+  border: 1px solid #8de9f4;
+  font-size: 15px;
+}
+
+#Send{
+  background-color: rgb(0, 8, 28);
+  border: 1px solid #8de9f4;
+  font-size: 15px;
+}
+
+.chat-content {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  padding: 5px;
+  font-size: 15px;
+  display: none;
+}
+
+
+.chat {
+  overflow-y: auto;
+  max-height: 200px; 
+  font-size: 14px; 
+}
+
+
+input[type="text"], button {
+  width: 100%; 
+  margin-top: 10px; 
+  font-size: 14px; 
+  padding: 5px;
+}
+
+#radar-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 70vh;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: linear-gradient(#252525, #0c0c0c);
+}
+
+.radar {
+  position: relative;
+  width: 60vmin;
+  height: 60vmin;
+  background: repeating-radial-gradient(transparent, transparent 4.5%, rgba(80, 255, 0, 0.35) 5%, transparent 5.5%) content-box, linear-gradient(transparent 49.7%, rgba(80, 255, 0, 0.2) 49.9%, rgba(80, 255, 0, 0.2) 50.1%, transparent 50.3%) content-box, linear-gradient(to right, transparent 49.7%, rgba(80, 255, 0, 0.2) 49.9%, rgba(80, 255, 0, 0.2) 50.1%, transparent 50.3%) content-box, radial-gradient(#002500, #000500) content-box, linear-gradient(to bottom right, #ccc, #666) border-box;
+  border: 2.5vmin solid transparent;
+  border-radius: 50%;
+  box-sizing: border-box;
+  overflow: hidden;
+  filter: drop-shadow(1vmin 1vmin 1vmin rgba(0, 0, 0, 0.4));
+}
+.radar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: conic-gradient(transparent 90%, rgba(80, 255, 0, 0.35));
+  border-radius: 50%;
+  box-shadow: inset 0 0 2vmin rgba(0, 0, 0, 0.9);
+  -webkit-animation: spin 2s linear infinite;
+          animation: spin 2s linear infinite;
+}
+.radar__dot {
+  position: absolute;
+  width: 3%;
+  height: 3%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-animation: blink 2s ease-out infinite;
+          animation: blink 2s ease-out infinite;
+}
+.radar__dot:first-of-type {
+  top: 24%;
+  left: 76%;
+  -webkit-animation-delay: 0.25s;
+          animation-delay: 0.25s;
+}
+.radar__dot:nth-of-type(2) {
+  top: 80%;
+  left: 20%;
+  -webkit-animation-delay: 1.25s;
+          animation-delay: 1.25s;
+}
+.radar__dot:last-of-type {
+  top: 36%;
+  left: 36%;
+  -webkit-animation-delay: 1.75s;
+          animation-delay: 1.75s;
+}
+
+@-webkit-keyframes spin {
+  to {
+    transform: rotate(1turn);
   }
-  
-li {
-    float: left;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
   }
-  
-li a {
-    display: block;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
+}
+@-webkit-keyframes blink {
+  2%, 20% {
+    background-color: rgba(80, 255, 0, 0.85);
+    box-shadow: 0 0 1vmin rgba(80, 255, 0, 0.6);
   }
-  
-li a:hover {
-    background-color: #111;
+  90% {
+    background-color: transparent;
   }
+}
+@keyframes blink {
+  2%, 20% {
+    background-color: rgba(80, 255, 0, 0.85);
+    box-shadow: 0 0 1vmin rgba(80, 255, 0, 0.6);
+  }
+  90% {
+    background-color: transparent;
+  }
+}

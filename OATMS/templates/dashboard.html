@@ -1,55 +1,123 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FlyHigh</title>
-        <link rel="icon" type="image/png" href="static/css/logo.png" alt="FlyHigh">
-        <script src="https://kit.fontawesome.com/00ac4f1850.js" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-        <script src="/static/js/login.js" defer></script>
-    </head>
-    <body>
+  <head>
+    <meta charset="UTF8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlyHigh</title>
+    <link rel="icon" type="image/png" href="static/css/logo.png" alt="FlyHigh"/>
+    <script src="https://kit.fontawesome.com/00ac4f1850.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" href="static/css/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"/>
+    <script src="/static/js/dashboard.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
 
-        <nav class="navbar navbar-expand-lg bg-body-tertiary bg-info-subtle">
-            <div class="container-fluid">
-              <a class="navbar-brand" href="#">Welcome to FlyHigh</a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                  <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">Profile</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="/logout">Log-out</a>
-                  </li>
-                </ul>
-              </div>
+  <body>
+    <main>
+      <nav class="Navigation">
+        <ul>
+          <li><strong>Welcome to FlyHigh</strong></li>
+        </ul>
+        <ul class="nav_list">
+          <li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="/logout" role="button">Log-out</a></li>
+          </li>
+        </ul>
+      </nav>
+      <div id="current-time" style="position: fixed; right: 2px; top:65px; font-size: 40px; z-index: 1;"></div>
+      <div class="content" style="margin-top: 700px;">
+        <section class="dashboard-item">
+          <h2>View Flight Data</h2>
+          <p>View current flight details.</p>
+          <div id="radar-container">
+            <div class="radar">
+              <div class="radar__dot"></div>
+              <div class="radar__dot"></div>
+              <div class="radar__dot"></div>
             </div>
-          </nav>
-        <main>
-            <section class="dashboard-item">
-                <h2>View Flight Data</h2>
-                <p>View current flight details.</p>
-            </section>
-            <section class="dashboard-item">
-                <h2>Bookings</h2>
-                <p>Manage your flight bookings and reservations.</p>
-            </section>
-            <section class="dashboard-item">
-                <h2>Profile</h2>
-                <p>Update your profile and contact information.</p>
-            </section>
-        </main>
-        <footer>
-            <p>
-                Made with <i class="fa-solid fa-heart"></i> by Debosmita Bedajna.
-            </p>
-        <footer>
-    </body>
+          </div>
+        </section>
+        <h1>Weather Information</h1>
+        <div class="grid">
+          <div class="weather-data">
+            <div class="location">
+              <p><strong>Location:</strong> Kolkata, India</p>
+              <p><strong>Region:</strong> West Bengal</p>
+              <p><strong>Latitude:</strong> 22.57</p>
+              <p><strong>Longitude:</strong> 88.37</p>
+            </div>
+            <div class="condition">
+              <p><strong>Condition:</strong> Mist</p>
+              <img
+                src="//cdn.weatherapi.com/weather/64x64/night/143.png"
+                alt="Weather Icon"/>
+            </div>
+            <div class="details">
+              <p><strong>Wind (mph):</strong> 2.2</p>
+              <p><strong>Wind Degree:</strong> 10</p>
+              <p><strong>Wind Direction:</strong> N</p>
+              <p><strong>Humidity:</strong> 78</p>
+              <p><strong>Cloud:</strong> 25</p>
+            </div>
+            <div class="air-quality">
+              <p><strong>Air Quality:</strong></p>
+              <ul class="AQ">
+                <li><strong>CO:</strong> 2029.4</li>
+                <li><strong>NO2:</strong> 52.1</li>
+                <li><strong>O3:</strong> 13.6</li>
+                <li><strong>SO2:</strong> 26.0</li>
+                <li><strong>PM2.5:</strong> 225.7</li>
+                <li><strong>PM10:</strong> 356.6</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="chatbox-container">
+          <button onclick="myFunction()" id="chatbut">Chat</button>
+          <div class="chat-content">
+              <div class="chat" id="chat"></div>
+              <input type="text" id="user-input" placeholder="Type your message...">
+              <button onclick="sendMessage()" id="Send">Send</button>
+          </div>
+        </div>
+
+    <footer>
+      Made with <i class="fa-solid fa-heart"></i> by Debosmita Bedajna.
+    </footer>
+    </main>
+  </body>
+  <script>
+    function sendMessage() {
+      const message = document.getElementById('user-input').value;
+      appendMessage('You: ' + message);
+      document.getElementById('user-input').value = '';
+  }
+
+  function appendMessage(message) {
+      const chat = document.getElementById('chat');
+      const messageElement = document.createElement('p');
+      messageElement.textContent = message;
+      chat.appendChild(messageElement);
+  }
+
+  function pollMessages() {
+      $.get('/get_messages', function(data) {
+          const messages = data.messages;
+          for (const message of messages) {
+              appendMessage(message);
+          }
+      });
+  }
+
+  setInterval(pollMessages, 2000);
+
+  pollMessages();
+  </script>
 </html>
