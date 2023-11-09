@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlyHigh</title>
+    <link rel="icon" type="image/png" href="static/css/logo.png" alt="FlyHigh" />
+    <script src="https://kit.fontawesome.com/00ac4f1850.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"/>
+    <link rel="stylesheet" href="static/css/arrdept.css" />
+</head>
+
+<body>
+    <main>
+        <nav class="Navigation">
+            <ul>
+                <li><strong>Welcome to FlyHigh</strong></li>
+            </ul>
+            <ul class="nav_list">
+                <li>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="/arrivals_departures">Terminal management</li>
+                    <li><a href="/dashboard">Dashboardt</li>
+                    <li><a href="/logout" role="button">Log-out</a></li>
+                </li>
+            </ul>
+        </nav>
+        <h1> NETAJI SUBHASH CHANDRA BOSE AIRPORT, KOLKATA</h1>
+        <p><strong>Welcome to the Terminal, Arrival, and Departure management page</strong></p>
+        <div id="current-time"></div>
+        <section>
+            <h2>Arrival Flights</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aircraft Name</th>
+                        <th>Airline</th>
+                        <th>Origin Airport</th>
+                        <th>Destination Airport</th>
+                        <th>Terminal</th>
+                        <th>Delay</th>
+                        <th>Departure Time</th>
+                        <th>Arrival Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for flight in arr_flight_details %}
+                    <tr>
+                        <td>{{ flight['Aircraft Name'] }}</td>
+                        <td>{{ flight['Airline'] }}</td>
+                        <td>{{ flight['Origin Airport'] }}</td>
+                        <td>{{ flight['Destination Airport'] }}</td>
+                        <td>{{ flight['Terminal'] }}</td>
+                        <td>{{ flight['Delay'] }}</td>
+                        <td>{{ flight['Departure Time'] }}</td>
+                        <td>{{ flight['Arrival Time'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Departure Flights</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aircraft Name</th>
+                        <th>Airline</th>
+                        <th>Origin Airport</th>
+                        <th>Destination Airport</th>
+                        <th>Terminal</th>
+                        <th>Status</th>
+                        <th>Departure Time</th>
+                        <th>Arrival Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for flight in dept_flights_details %}
+                    <tr>
+                        <td>{{ flight['Aircraft Name'] }}</td>
+                        <td>{{ flight['Airline'] }}</td>
+                        <td>{{ flight['Origin Airport'] }}</td>
+                        <td>{{ flight['Destination Airport'] }}</td>
+                        <td>{{ flight['Terminal'] }}</td>
+                        <td>{{ flight['Status'] }}</td>
+                        <td>{{ flight['Departure Time'] }}</td>
+                        <td>{{ flight['Arrival Time'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+<script>function updateTime() {
+    const currentTimeElement = document.getElementById('current-time');
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    const timeString = `${hours}:${minutes}:${seconds}`;
+
+    currentTimeElement.textContent = timeString;
+}
+
+
+setInterval(updateTime, 1000);
+
+updateTime();
+</script>
+</html>

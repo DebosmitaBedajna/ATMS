@@ -1,0 +1,32 @@
+* {
+    background-color: rgb(0, 8, 28);
+    color: aliceblue;
+  }
+
+.Navigation{
+    position: fixed;
+    width: 99%;
+    top: 0px;
+    z-index: 1;
+  }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #333;
+    color: white;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
