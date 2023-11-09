@@ -49,16 +49,15 @@ def logout():
     session.pop('username', None)
     return redirect('/') 
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(host='0.0.0.0', port=5000, debug=True)
-
 def weatherData():
     #url = "https://api.weatherapi.com/v1/current.json?key=2eb13cf49a934aabb3b74217230611&q=Kolkata&aqi=yes"
     #data = post(url)
 
     return jsonify({}) #data.json()
+
+@app.route('/profile')
+def profile():
+    return render_template('profile.html')
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
@@ -72,6 +71,13 @@ def send_message():
 def get_messages():
     return jsonify({'messages': chat_messages})
 
+@app.route('/arrivals_departures')
+def arrivals_departures():
+    arrival_flight_details = get_arrivals()
+    departure_flight_details = get_departures()
+    return render_template('arrivals_departures.html', arr_flight_details=arrival_flight_details, dept_flights_details=departure_flight_details)
+
+
 def get_flight_data():
     api.set_flight_tracker_config(FlightTrackerConfig(limit="30"))
     flights = api.get_flights()
@@ -83,3 +89,72 @@ def get_flight_data():
             flight.name = flight_details['aircraft']['model']['text']
             lst.append(flight)  
     return lst
+
+arr_flight_details = []
+dept_flights_details=[]
+airports = api.get_airports()
+airport_details = api.get_airport_details('CCU')
+def get_arrivals():
+
+    for flight in airport_details['airport']['pluginData']['schedule']['arrivals']['data']:
+        flight_info = {
+            'Aircraft Name':flight['flight']['aircraft']['model']['text'],
+            'Airline': flight['flight']['airline']['name'],
+            'Origin Airport': flight['flight']['airport']['origin']['name'],
+            'Destination Airport': "Kolkata Netaji Subhas Chandra Bose Airport",
+            'Terminal':flight['flight']['airport']['origin']['info']['terminal'],
+            'Delay': flight['flight']['status']['text'],
+            'Departure Time': flight['flight']['time']['scheduled']['departure'],
+            'Arrival Time': flight['flight']['time']['scheduled']['arrival']
+        }
+
+        arr_flight_details.append(flight_info)
+
+
+    return  arr_flight_details
+
+
+def get_departures():
+    for flight in airport_details['airport']['pluginData']['schedule']['departures']['data']:
+        flight_info = {
+            'Aircraft Name': flight['flight']['aircraft']['model']['text'],
+            'Airline': flight['flight']['airline']['name'],
+            'Origin Airport': "Kolkata Netaji Subhas Chandra Bose Airport",
+            'Destination Airport': flight['flight']['airport']['destination']['name'],
+            'Terminal': flight['flight']['airport']['destination']['info']['terminal'],
+            'Status':  flight['flight']['status']['text'],
+            'Departure Time':  flight['flight']['time']['scheduled']['departure'],
+            'Departure Time': flight['flight']['time']['scheduled']['arrival']
+        }
+
+        dept_flights_details.append(flight_info)
+
+    return dept_flights_details
+
+def perform_search(search_input):
+    search_results = []
+
+    for flight in arr_flight_details:
+        if search_input.lower() in flight['Aircraft Name'].lower() or search_input.lower() in flight['Airline'].lower():
+            search_results.append(flight)
+
+    for flight in dept_flights_details:
+        if search_input.lower() in flight['Aircraft Name'].lower() or search_input.lower() in flight['Airline'].lower():
+            search_results.append(flight)
+
+    return search_results
+
+from flask import request, render_template
+
+@app.route('/search', methods=['POST'])
+def search():
+    search_input = request.form.get('searchInput')
+    search_results = perform_search(search_input)
+    return render_template('arrivals_departures.html', arr_flight_details=arr_flight_details, dept_flights_details=dept_flights_details, search_results=search_results)
+
+
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -22,7 +22,7 @@
                     <li><a href="/profile">Profile</a></li>
                     <li><a href="#">About</a></li>
                     <li><a href="/arrivals_departures">Terminal management</li>
-                    <li><a href="/dashboard">Dashboardt</li>
+                    <li><a href="/dashboard">Dashboard</li>
                     <li><a href="/logout" role="button">Log-out</a></li>
                 </li>
             </ul>
@@ -30,6 +30,43 @@
         <h1> NETAJI SUBHASH CHANDRA BOSE AIRPORT, KOLKATA</h1>
         <p><strong>Welcome to the Terminal, Arrival, and Departure management page</strong></p>
         <div id="current-time"></div>
+        <section>
+            <h2>Search Arrivals or Departures</h2>
+            <form action="/search" method="post">
+                <label for="searchInput">Search:</label>
+                <input type="text" id="searchInput" name="searchInput" placeholder="Enter flight details...">
+                <button type="submit">Search</button>
+            </form>
+            <h2>Search Results</h2>
+                {% if search_results %}
+                    <table>
+                        <th>Aircraft Name</th>
+                        <th>Airline</th>
+                        <th>Origin Airport</th>
+                        <th>Destination Airport</th>
+                        <th>Terminal</th>
+                        <th>Delay</th>
+                        <th>Departure Time</th>
+                        <th>Arrival Time</th>
+                        <tbody>
+                            {% for result in search_results %}
+                            <tr>
+                                <td>{{ result['Aircraft Name'] }}</td>
+                                <td>{{ result['Airline'] }}</td>
+                                <td>{{ result['Origin Airport'] }}</td>
+                                <td>{{ result['Destination Airport'] }}</td>
+                                <td>{{ result['Terminal'] }}</td>
+                                <td>{{ result['Delay'] }}</td>
+                                <td>{{ result['Departure Time'] }}</td>
+                                <td>{{ result['Arrival Time'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No flight details available for the search.</p>
+                {% endif %}
+            </section>
         <section>
             <h2>Arrival Flights</h2>
             <table>
