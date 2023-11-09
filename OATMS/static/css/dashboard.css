@@ -3,12 +3,6 @@
   color: aliceblue;
 }
 
-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
 .Navigation{
   position: fixed;
   width: 99%;
@@ -23,6 +17,7 @@ main {
   width: 100%;
   height: 45vh;
   list-style: none;
+  font-size: 10vh;
 }
 
 .location,
@@ -73,7 +68,6 @@ footer i{
 padding: 1rem 2rem  ;
 
 }
-
 
 .chatbox-container {
   position: fixed;
@@ -126,15 +120,55 @@ input[type="text"], button {
 #radar-container {
   display: flex;
   justify-content: center;
+  align-items: center;
   width: 100%;
-  height: 70vh;
+  height: 60vh;
+  margin-top: 20px;
+}
+
+#flight-data-table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+  margin-bottom: 20px; 
+  background-color: white; 
+  border-radius: 5px; 
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+  overflow: hidden;
+}
+
+#flight-data-table th,
+#flight-data-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+#flight-data-table th {
+  background-color: #333;
+  color: white;
+}
+
+#flight-data-table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#flight-data-table tbody tr:hover {
+  background-color: #ddd;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center; 
 }
 
 body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  flex-direction: column;
   background-image: linear-gradient(#252525, #0c0c0c);
 }
 

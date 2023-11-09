@@ -31,10 +31,8 @@
         </ul>
       </nav>
       <div id="current-time" style="position: fixed; right: 2px; top:65px; font-size: 40px; z-index: 1;"></div>
-      <div class="content" style="margin-top: 700px;">
+      <div class="content">
         <section class="dashboard-item">
-          <h2>View Flight Data</h2>
-          <p>View current flight details.</p>
           <div id="radar-container">
             <div class="radar">
               <div class="radar__dot"></div>
@@ -42,6 +40,32 @@
               <div class="radar__dot"></div>
             </div>
           </div>
+          <table id="flight-data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Origin Airport</th>
+                <th>Altitude</th>
+                <th>Latitude,Longitude</th>
+                <th>Ground Speed</th>
+                <th>Heading</th>
+                <th>Destination Airport</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for flight in flight_data %}
+              <tr>
+                <td>{{ flight.name }}</td>
+                <td>{{ flight.origin_airport_name }}</td>
+                <td>{{ flight.altitude }}</td>
+                <td> {{ flight.latitude, flight.longitude }}</td>
+                <td>{{ flight.ground_speed }}</td>
+                <td>{{ flight.heading }}</td>
+                <td>{{ flight.destination_airport_name }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         </section>
         <h1>Weather Information</h1>
         <div class="grid">
@@ -119,5 +143,33 @@
   setInterval(pollMessages, 2000);
 
   pollMessages();
+
+  const flights = [
+    {% for flight in flight_data %}
+      {
+        name: "{{ flight.name }}",
+        latitude: {{ flight.latitude }},
+        longitude: {{ flight.longitude }}
+      },
+    {% endfor %}
+  ];
+
+  function convertToRadarPosition(latitude, longitude) {
+    const radarX = (longitude + 180) * (100 / 360);
+    const radarY = (90 - latitude) * (100 / 180);
+    return { x: radarX, y: radarY };
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    flights.forEach((flight) => {
+      const radarPosition = convertToRadarPosition(flight.latitude, flight.longitude);
+      const flightMarker = document.createElement('div');
+      flightMarker.classList.add('radar__dot');
+      flightMarker.style.top = `${radarPosition.y}%`;
+      flightMarker.style.left = `${radarPosition.x}%`;
+      flightMarker.dataset.name = `Flight ${flight.name}`;
+      document.querySelector('.radar').appendChild(flightMarker);
+    });
+  });
   </script>
 </html>

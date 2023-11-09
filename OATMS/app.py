@@ -4,6 +4,10 @@ from models import db, User
 from requests import post
 import json
 
+from FlightRadar24 import FlightRadar24API, FlightTrackerConfig
+
+api = FlightRadar24API()
+
 app = Flask(__name__, static_url_path='/static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/debosmitabedajna/Desktop/bkatms/OATMS/instance/users.db'
 db = SQLAlchemy(app)
@@ -37,7 +41,8 @@ def login_post():
 @app.route('/dashboard')
 def dashboard():
     wd = weatherData()
-    return render_template('dashboard.html', newvar=wd)
+    flight_data = get_flight_data()
+    return render_template('dashboard.html', newvar=wd, flight_data=flight_data)
 
 @app.route('/logout')
 def logout():
@@ -66,3 +71,15 @@ def send_message():
 @app.route('/get_messages', methods=['GET'])
 def get_messages():
     return jsonify({'messages': chat_messages})
+
+def get_flight_data():
+    api.set_flight_tracker_config(FlightTrackerConfig(limit="30"))
+    flights = api.get_flights()
+    lst = []
+    for flight in flights:
+        flight_details = api.get_flight_details(flight)
+        flight.set_flight_details(flight_details)
+        if flight.destination_airport_name != 'N/A':
+            flight.name = flight_details['aircraft']['model']['text']
+            lst.append(flight)  
+    return lst
