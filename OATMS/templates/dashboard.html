@@ -12,6 +12,7 @@
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <script src="/static/js/dashboard.js" defer></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   </head>
@@ -109,9 +110,11 @@
         <div class="chatbox-container">
           <button onclick="myFunction()" id="chatbut">Chat</button>
           <div class="chat-content">
-              <div class="chat" id="chat"></div>
-              <input type="text" id="user-input" placeholder="Type your message...">
-              <button onclick="sendMessage()" id="Send">Send</button>
+            <form id="messageForm">
+              <input type="text" id="messageInput" placeholder="Type your message..." required>
+              <button type="button" onclick="sendMessage()">Send</button>
+          </form>
+          <div id="chatDiv"></div>
           </div>
         </div>
 
@@ -121,58 +124,49 @@
     </main>
   </body>
   <script>
-    function sendMessage() {
-      const message = document.getElementById('user-input').value;
-      appendMessage('You: ' + message);
-      document.getElementById('user-input').value = '';
-  }
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        function sendMessage() {
+            var message = document.getElementById('messageInput').value;
+            socket.emit('message', message);
+            document.getElementById('messageInput').value = '';
+        }
 
-  function appendMessage(message) {
-      const chat = document.getElementById('chat');
-      const messageElement = document.createElement('p');
-      messageElement.textContent = message;
-      chat.appendChild(messageElement);
-  }
+        socket.on('message', function (msg) {
+            var chatDiv = document.getElementById('chatDiv');
+            var p = document.createElement('p');
+            p.appendChild(document.createTextNode(msg));
+            chatDiv.appendChild(p);
+        })
+        document.getElementById('messageForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+        });
 
-  function pollMessages() {
-      $.get('/get_messages', function(data) {
-          const messages = data.messages;
-          for (const message of messages) {
-              appendMessage(message);
-          }
+      const flights = [
+        {% for flight in flight_data %}
+          {
+            name: "{{ flight.name }}",
+            latitude: {{ flight.latitude }},
+            longitude: {{ flight.longitude }}
+          },
+        {% endfor %}
+      ];
+
+      function convertToRadarPosition(latitude, longitude) {
+        const radarX = (longitude + 180) * (100 / 360);
+        const radarY = (90 - latitude) * (100 / 180);
+        return { x: radarX, y: radarY };
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        flights.forEach((flight) => {
+          const radarPosition = convertToRadarPosition(flight.latitude, flight.longitude);
+          const flightMarker = document.createElement('div');
+          flightMarker.classList.add('radar__dot');
+          flightMarker.style.top = `${radarPosition.y}%`;
+          flightMarker.style.left = `${radarPosition.x}%`;
+          flightMarker.dataset.name = `Flight ${flight.name}`;
+          document.querySelector('.radar').appendChild(flightMarker);
+        });
       });
-  }
-
-  setInterval(pollMessages, 2000);
-
-  pollMessages();
-
-  const flights = [
-    {% for flight in flight_data %}
-      {
-        name: "{{ flight.name }}",
-        latitude: {{ flight.latitude }},
-        longitude: {{ flight.longitude }}
-      },
-    {% endfor %}
-  ];
-
-  function convertToRadarPosition(latitude, longitude) {
-    const radarX = (longitude + 180) * (100 / 360);
-    const radarY = (90 - latitude) * (100 / 180);
-    return { x: radarX, y: radarY };
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    flights.forEach((flight) => {
-      const radarPosition = convertToRadarPosition(flight.latitude, flight.longitude);
-      const flightMarker = document.createElement('div');
-      flightMarker.classList.add('radar__dot');
-      flightMarker.style.top = `${radarPosition.y}%`;
-      flightMarker.style.left = `${radarPosition.x}%`;
-      flightMarker.dataset.name = `Flight ${flight.name}`;
-      document.querySelector('.radar').appendChild(flightMarker);
-    });
-  });
   </script>
 </html>

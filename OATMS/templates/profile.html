@@ -1,29 +1,83 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlyHigh</title>
     <link rel="icon" type="image/png" href="static/css/logo.png" alt="FlyHigh"/>
     <script src="https://kit.fontawesome.com/00ac4f1850.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"/>
-  </head>
+    <link rel="stylesheet" hreaf="static/css/profile.css" />
+</head>
 
-  <body>
+<body>
     <main>
-      <nav class="Navigation">
-        <ul>
-          <li><strong>Welcome to FlyHigh</strong></li>
-        </ul>
-        <ul class="nav_list">
-          <li>
-            <li><a href="/profile">Profile</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="/arrivals_departures">Terminal management</li>
-            <li><a href="/dashboard">Dashboardt</li>
-            <li><a href="/logout" role="button">Log-out</a></li>
-          </li>
-        </ul>
-      </nav>
+        <nav class="Navigation">
+            <ul>
+                <li><strong>Welcome to FlyHigh</strong></li>
+            </ul>
+            <ul class="nav_list">
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="/arrivals_departures">Terminal management</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/logout" role="button">Log-out</a></li>
+            </ul>
+        </nav>
+
+        <h1>Welcome, {{ user.username }}!</h1>
+        <p>Role: {{ user.designation }}</p>
+
+        {% if user.designation == 'ATC' %}
+            <h2>You have additional permissions:</h2>
+
+            <button onclick="showAddUserForm()">Add User</button>
+            <button onclick="showRemoveUserForm()">Remove User</button>
+
+            <div id="addUserForm" style="display: none;">
+                <h3>Add User:</h3>
+                <form method="POST" action='/profile'>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="username" required><br>
+                    
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required><br>
+                
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required><br>
+                
+                    <label for="designation">Designation:</label>
+                    <select id="designation" name="designation" required>
+                        <option value="Pilot">Pilot</option>
+                        <option value="ATC">ATC</option>
+                    </select><br>
+                
+                    <input type="submit" value="Add User">
+                </form>
+                <div id="removeUserForm" style="display: none;">
+                  <h3>Remove User:</h3>
+                  <form method="POST" action='/profile'>
+                      <label for="removeUsername">Username to Remove:</label>
+                      <input type="text" id="removeUsername" name="removeUsername" required><br>
+              
+                      <input type="submit" value="Remove User">
+                  </form>
+        {% else %}
+            <p>Regular user permissions...</p>
+        {% endif %}
     </main>
+</body>
+
+<script>
+        function showAddUserForm() {
+            document.getElementById('addUserForm').style.display = 'block';
+            document.getElementById('removeUserForm').style.display = 'none';
+        }
+      
+        function showRemoveUserForm() {
+            document.getElementById('addUserForm').style.display = 'none';
+            document.getElementById('removeUserForm').style.display = 'block';
+        }
+</script>
+
 </html>

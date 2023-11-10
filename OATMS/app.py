@@ -1,25 +1,37 @@
 from flask import Flask, render_template, request, redirect, session,jsonify
+from flask import flash
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User
 from requests import post
+from flask_migrate import Migrate
 import json
-
+from datetime import timedelta
 from FlightRadar24 import FlightRadar24API, FlightTrackerConfig
+from flask_socketio import SocketIO, emit
 
 api = FlightRadar24API()
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/debosmitabedajna/Desktop/bkatms/OATMS/instance/users.db'
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 app.secret_key = 'secretivekeyagain'
 chat_messages = []
+curruser={}
+app.config['SESSION_COOKIE_SECURE'] = True  
+app.config['SESSION_COOKIE_PATH'] = '/'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1) 
+socketio = SocketIO(app)
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
- 
+    designation = db.Column(db.String(80), default='ATC', nullable=True) 
+
+
 @app.route('/')
 def index():
     return render_template('login.html')
@@ -33,10 +45,13 @@ def login_post():
     user = User.query.filter_by(username=username, email=email, password=password).first()
 
     if user:
+        curruser['username'] = username
+        curruser['designation'] = user.designation
+        session['username'] = username 
         return redirect('/dashboard')
     else:
         return render_template('login.html', error='Invalid credentials')
-
+    
 
 @app.route('/dashboard')
 def dashboard():
@@ -55,9 +70,53 @@ def weatherData():
 
     return jsonify({}) #data.json()
 
-@app.route('/profile')
+def create_user(username, email, password, designation):
+    with app.app_context():
+        user = User(username=username, email=email, password=password, designation=designation)
+        db.session.add(user)
+        db.session.commit()
+
+@app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    return render_template('profile.html')
+    user=curruser
+    print(user)
+    if request.method == 'POST':
+        if 'addUser' in request.form:
+            new_username = request.form.get('username')
+            new_email = request.form.get('email')
+            new_password = request.form.get('password')
+            new_designation = request.form.get('designation')
+            
+            if not new_username or not new_email or not new_password or not new_designation:
+                flash('All fields are required for adding a user.', 'error')
+                print("Validation error:", 'All fields are required for adding a user.')
+            else:
+                new_user = User(username=new_username, email=new_email, password=new_password, designation=new_designation)
+                db.session.add(new_user)
+                db.session.commit()
+                flash(f'User {new_username} added successfully!', 'success')
+                print(f'User {new_username} added successfully!')
+                print("Received data:", new_username, new_email, new_password, new_designation)
+        elif 'removeUser' in request.form:
+            remove_username = request.form.get('removeUsername')
+            user_to_remove = User.query.filter_by(username=remove_username).first()
+
+            if user_to_remove:
+                db.session.delete(user_to_remove)
+                db.session.commit()
+                flash(f'User {remove_username} removed successfully!', 'success')
+            else:
+                flash(f'User {remove_username} not found.', 'error')
+
+    return render_template('profile.html', user=user)
+
+
+@socketio.on('message')
+def handle_message(msg):
+    # Broadcast the received message to all clients
+    emit('message', msg, broadcast=True)
+
+
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
@@ -65,7 +124,12 @@ def send_message():
     if 'username' in session:
         username = session['username']
         chat_messages.append(f'{username}: {message}')
+
+        # Emit the message to all clients
+        socketio.emit('message', f'{username}: {message}', broadcast=True)
+
     return jsonify({'status': 'success'})
+
 
 @app.route('/get_messages', methods=['GET'])
 def get_messages():
@@ -152,9 +216,15 @@ def search():
     search_results = perform_search(search_input)
     return render_template('arrivals_departures.html', arr_flight_details=arr_flight_details, dept_flights_details=dept_flights_details, search_results=search_results)
 
+def create_user(username, email, password, designation):
+    with app.app_context():
+        user = User(username=username, email=email, password=password, designation=designation)
+        db.session.add(user)
+        db.session.commit()
 
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Use eventlet to run the application
+    socketio.run(app, host='0.0.0.0', port=5000, debug=True, use_reloader=False)
