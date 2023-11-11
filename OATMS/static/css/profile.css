@@ -1,29 +1,174 @@
 * {
-    background-color: rgb(0, 8, 28);
-    color: aliceblue;
-  }
+    margin: 0;
+    padding: 0;
+    font-size: 2vh;
+}
 
-.Navigation{
+body {
+    background-color: rgb(144, 211, 239);
+}
+
+.Navigation {
     position: fixed;
     width: 99%;
     top: 0px;
     z-index: 1;
+    background-color: rgb(0, 8, 28);
 }
 
-main{
+nav ul {
+    list-style: none;
+    background-color: rgb(0, 8, 28);
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+    background-color: rgb(0, 8, 28);
+}
+
+.navlist {
+    background-color: rgb(0, 8, 28);
+}
+
+main {
     display: flex;
     flex-direction: column;
 }
 
-#addUserForm{
+.Userinfo {
+    background-color: rgba(0, 8, 28, 0.307);
+    color: aliceblue;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 5px;
+    width: 95%;
+    max-width: 100%;
+    margin: 20px auto;
+    box-sizing: border-box;
+  }
+
+.Userinfo h4 {
+    margin: 5px 0;
+    color: aliceblue;
+}
+
+button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-right: 10px;
+    width: 50%;
+}
+.Buttoninter{
+    display: flex;
+}
+button:hover {
+    background-color: #555;
+}
+
+form {
+    margin-top: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-field {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.input-field i {
+    margin-right: 10px;
+    color: #333;
+}
+
+input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 100%;
+}
+
+input[type="submit"] {
+    background-color: #333;
+    color: #fff;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #555;
+}
+
+#addUserForm {
     width: 90%;
     max-width: 450px;
     position: absolute;
     top: 3%;
     left: 50%;
-    transform: translate(-50%,50%);
-    background-color:rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, 50%);
+    background-color: rgba(0, 0, 0, 0.801);
     padding: 50px 60px 70px;
     text-align: center;
-    border-radius: 70px;
+    color: aliceblue;
+}
+
+#removeUserForm {
+    width: 90%;
+    max-width: 450px;
+    position: absolute;
+    top: 3%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    background-color: rgba(0, 0, 0, 0.801);
+    padding: 50px 60px 70px;
+    text-align: center;
+}
+
+footer {
+    color: rgb(247, 247, 247);
+    background: rgb(0, 8, 28);
+    ;
+    text-align: center;
+    padding: 1rem 0;
+    bottom: 0;
+    width: 100%;
+    font-size: 14px;
+}
+
+footer i {
+    color: crimson;
+}
+
+.profpic{
+    border-radius: 50%;
+    height: 30vh;
+    float: left;
+    margin-right: 10vh;
+}
+.ProfileDetails {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+
+.UserDetails {
+    flex: 1; 
+}
+
+main{
+    background-image: url(hui.jpg);
+    background-size: cover;
+    height: 100vh;
+    background-position: center;
+    position: relative;
 }

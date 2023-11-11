@@ -26,7 +26,6 @@
         <ul class="nav_list">
           <li>
             <li><a href="/profile">Profile</a></li>
-            <li><a href="#">About</a></li>
             <li><a href="/arrivals_departures">Terminal management</li>
             <li><a href="/dashboard">Dashboard</li>
             <li><a href="/logout" role="button">Log-out</a></li>
@@ -75,33 +74,34 @@
         <div class="grid">
           <div class="weather-data">
             <div class="location">
-              <p><strong>Location:</strong> Kolkata, India</p>
-              <p><strong>Region:</strong> West Bengal</p>
-              <p><strong>Latitude:</strong> 22.57</p>
-              <p><strong>Longitude:</strong> 88.37</p>
+              <p><strong>Location:</strong> {{newvar['location']['name']}}</p>
+              <p><strong>Region:</strong> {{newvar['location']['region']}}</p>
+              <p><strong>Latitude:</strong> {{newvar['location']['lat']}}</p>
+              <p><strong>Longitude:</strong> {{newvar['location']['lon']}}</p>
             </div>
             <div class="condition">
-              <p><strong>Condition:</strong> Mist</p>
+              <p><strong>Condition:</strong> {{newvar['current']['condition']['text']}}</p>
               <img
-                src="//cdn.weatherapi.com/weather/64x64/night/143.png"
+                src={{newvar['current']['condition']['icon']}}
                 alt="Weather Icon"/>
+                <p><strong>Pressure:</strong>{{newvar['current']['pressure_mb']}}
             </div>
             <div class="details">
-              <p><strong>Wind (mph):</strong> 2.2</p>
-              <p><strong>Wind Degree:</strong> 10</p>
-              <p><strong>Wind Direction:</strong> N</p>
-              <p><strong>Humidity:</strong> 78</p>
-              <p><strong>Cloud:</strong> 25</p>
+              <p><strong>Wind (mph):</strong> {{newvar['current']['wind_mph']}}</p>
+              <p><strong>Wind Degree:</strong> {{ newvar['current']['wind_degree']}}</p>
+              <p><strong>Wind Direction:</strong> {{newvar['current']['wind_dir']}}</p>
+              <p><strong>Humidity:</strong> {{newvar['current']['humidity']}}</p>
+              <p><strong>Cloud:</strong> {{ newvar['current']['cloud']}}</p>
             </div>
             <div class="air-quality">
               <p><strong>Air Quality:</strong></p>
               <ul class="AQ">
-                <li><strong>CO:</strong> 2029.4</li>
-                <li><strong>NO2:</strong> 52.1</li>
-                <li><strong>O3:</strong> 13.6</li>
-                <li><strong>SO2:</strong> 26.0</li>
-                <li><strong>PM2.5:</strong> 225.7</li>
-                <li><strong>PM10:</strong> 356.6</li>
+                <li><strong>CO:</strong> {{ newvar['current']['air_quality']['co']}}</li>
+                <li><strong>NO2:</strong> {{ newvar['current']['air_quality']['no2']}}</li>
+                <li><strong>O3:</strong> {{ newvar['current']['air_quality']['o3']}}</li>
+                <li><strong>SO2:</strong> {{ newvar['current']['air_quality']['so2']}} </li>
+                <li><strong>PM2.5:</strong> {{ newvar['current']['air_quality']['pm2_5']}}</li>
+                <li><strong>PM10:</strong> {{ newvar['current']['air_quality']['pm10']}}</li>
               </ul>
             </div>
           </div>
@@ -111,36 +111,42 @@
           <button onclick="myFunction()" id="chatbut">Chat</button>
           <div class="chat-content">
             <form id="messageForm">
+                        <div id="chatDiv"></div>
               <input type="text" id="messageInput" placeholder="Type your message..." required>
-              <button type="button" onclick="sendMessage()">Send</button>
-          </form>
-          <div id="chatDiv"></div>
+              <button type="button" onclick="sendMessage()" id="Send">Send</button>
+            </form>
           </div>
         </div>
-
+        <div class="em">
+        <button id="emergencyButton">SOS</button>
+        </div>
     <footer>
       Made with <i class="fa-solid fa-heart"></i> by Debosmita Bedajna.
     </footer>
     </main>
   </body>
   <script>
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
-        function sendMessage() {
-            var message = document.getElementById('messageInput').value;
-            socket.emit('message', message);
-            document.getElementById('messageInput').value = '';
-        }
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
 
-        socket.on('message', function (msg) {
-            var chatDiv = document.getElementById('chatDiv');
-            var p = document.createElement('p');
-            p.appendChild(document.createTextNode(msg));
-            chatDiv.appendChild(p);
-        })
-        document.getElementById('messageForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-        });
+    function sendMessage() {
+      var message = document.getElementById('messageInput').value;
+      socket.emit('message', { user: '{{ user.username }}', message: message });
+      document.getElementById('messageInput').value = '';
+  };
 
+  socket.on('message', function (data) {
+    var chatContent = document.getElementById('chatDiv');
+
+    var p = document.createElement('p');
+    p.appendChild(document.createTextNode(data.user + ': ' + data.message));
+
+    chatContent.appendChild(p);
+});
+    document.getElementById('messageForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+    });
+
+    
       const flights = [
         {% for flight in flight_data %}
           {
@@ -168,5 +174,14 @@
           document.querySelector('.radar').appendChild(flightMarker);
         });
       });
+
+    document.getElementById('emergencyButton').addEventListener('click', function() {
+      socket.emit('emergency');
+  });
+
+    socket.on('emergency_alert', function() {
+      alert('Emergency Alert! Seek immediate action!');
+  });
+
   </script>
 </html>

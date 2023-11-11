@@ -15,26 +15,36 @@ lst = []
 # zone = api.get_zones()["india"]
 # print(flights)
 # bounds = api.get_bounds(zone)
+name="Boeing 767-3S2F"
 
-# for flight in flights:
-#     flight_details = api.get_flight_details(flight)
-#     flight.set_flight_details(flight_details)
-#     if flight.destination_airport_name != 'N/A':
-#         # print( flight_details['aircraft']['model']['text'])
-#         # print(flight.latitude, flight.longitude)
-#         # print("Flying from", flight.origin_airport_name)
-#         # print("Flying to", flight.destination_airport_name)
-#         # break
-#         # # lst.append(flight.destination_airport_name)
-#         lst.append(flight)  
-#         break
+for flight in flights:
+    flight_details = api.get_flight_details(flight)
+    flight.set_flight_details(flight_details)
+    if  name == flight_details['aircraft']['model']['text']:
+        print(flight_details)
+        print("True")
+        break
+    # if flight.destination_airport_name != 'N/A':
+    #     print(flight_details)
+    #     print( flight_details['aircraft']['model']['text'])
+    #     print(flight.latitude, flight.longitude)
+    #     print("Flying from", flight.origin_airport_name)
+    #     print("Flying to", flight.destination_airport_name)
+    #     break
+        # lst.append(flight.destination_airport_name)
+        # lst.append(flight)  
+        # break
+
+# flight_details = api.get_flight_details("B763")
+# flight.set_flight_details(flight_details)
+# print(flight_details)
 
 # print(flight)
 # arr_flight_details = {}
 # dept_flights_details={}
-airports = api.get_airports()
-airport_details = api.get_airport_details('CCU')
-print(airport_details)
+# airports = api.get_airports()
+# airport_details = api.get_airport_details('CCU')
+# print(airport_details)
 # for flight in airport_details['airport']['pluginData']['schedule']['arrivals']['data']:
 # # 
 # #     # print(flight['flight']['aircraft']['model']['text'], flight['flight']['owner']['name'])

@@ -7,18 +7,17 @@
     <link rel="icon" type="image/png" href="static/css/logo.png" alt="FlyHigh"/>
     <script src="https://kit.fontawesome.com/00ac4f1850.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"/>
-    <link rel="stylesheet" hreaf="static/css/profile.css" />
+    <link rel="stylesheet" href="static/css/profile.css" />
 </head>
 
 <body>
     <main>
         <nav class="Navigation">
-            <ul>
+            <ul class="nav_list">
                 <li><strong>Welcome to FlyHigh</strong></li>
             </ul>
             <ul class="nav_list">
                 <li><a href="/profile">Profile</a></li>
-                <li><a href="#">About</a></li>
                 <li><a href="/arrivals_departures">Terminal management</a></li>
                 <li><a href="/dashboard">Dashboard</a></li>
                 <li><a href="/logout" role="button">Log-out</a></li>
@@ -26,58 +25,79 @@
         </nav>
 
         <h1>Welcome, {{ user.username }}!</h1>
-        <p>Role: {{ user.designation }}</p>
+        <div class="Userinfo">
+            <div class="ProfileDetails">
+                <img class="profpic" src="static/css/logo.png" alt="Profile">
+                <div class="UserDetails">
+                    <h4>Name: {{ user.username }}</h4>
+                    <h4>Email: {{user.email}}</h4>
+                    <h4>Password: {{user.password}}</h4>
+                    <h4>Designation: {{user.designation}}</h4>
+                </div>
+            </div>
 
         {% if user.designation == 'ATC' %}
-            <h2>You have additional permissions:</h2>
-
-            <button onclick="showAddUserForm()">Add User</button>
-            <button onclick="showRemoveUserForm()">Remove User</button>
-
+            <h5 style="  color: #f7fffe;">Add or remove Users:</h5>
+            <div class="Buttoninter">
+            <button onclick="toggleAddUserForm()">Add User</button>
+            <button onclick="toggleRemoveUserForm()">Remove User</button>
+            </div>
             <div id="addUserForm" style="display: none;">
                 <h3>Add User:</h3>
                 <form method="POST" action='/profile'>
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="username" required><br>
-                    
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required><br>
-                
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required><br>
-                
-                    <label for="designation">Designation:</label>
-                    <select id="designation" name="designation" required>
-                        <option value="Pilot">Pilot</option>
-                        <option value="ATC">ATC</option>
-                    </select><br>
-                
-                    <input type="submit" value="Add User">
+                    <div class="input-group">
+                        <div class="input-field" id="username">
+                            <i class="fa-regular fa-user"></i>
+                            <input type="text" name="username" placeholder="Username" required>
+                        </div>
+                        <div class="input-field">
+                            <i class="fa-solid fa-envelope-circle-check"></i>
+                            <input type="email" name="email" placeholder="Email" required>
+                        </div>
+                        <div class="input-field">
+                            <i class="fa-solid fa-key"></i>
+                            <input type="password" name="password" placeholder="Password" required>
+                        </div>
+                    </div>
+                    <div class="input-field">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="text" name="designation" placeholder="designation" required>
+                    </div>
+                    <button type="submit" name="action" value="addUser">Add User</button>
+                </div>
+                    </div>
                 </form>
+            </div>
+        </div>
                 <div id="removeUserForm" style="display: none;">
                   <h3>Remove User:</h3>
                   <form method="POST" action='/profile'>
                       <label for="removeUsername">Username to Remove:</label>
                       <input type="text" id="removeUsername" name="removeUsername" required><br>
-              
-                      <input type="submit" value="Remove User">
+                      <button type="submit" name="action" value="removeUser">Remove User</button>
                   </form>
+                </div>
         {% else %}
             <p>Regular user permissions...</p>
         {% endif %}
     </main>
+    <footer>
+        Made with <i class="fa-solid fa-heart"></i> by Debosmita Bedajna.
+      </footer>
 </body>
 
 <script>
-        function showAddUserForm() {
-            document.getElementById('addUserForm').style.display = 'block';
-            document.getElementById('removeUserForm').style.display = 'none';
-        }
-      
-        function showRemoveUserForm() {
-            document.getElementById('addUserForm').style.display = 'none';
-            document.getElementById('removeUserForm').style.display = 'block';
-        }
+    function toggleAddUserForm() {
+        var addUserForm = document.getElementById('addUserForm');
+        addUserForm.style.display = (addUserForm.style.display === 'none' || addUserForm.style.display === '') ? 'block' : 'none';
+        document.getElementById('removeUserForm').style.display = 'none'; // Close the other form
+    }
+
+    function toggleRemoveUserForm() {
+        var removeUserForm = document.getElementById('removeUserForm');
+        removeUserForm.style.display = (removeUserForm.style.display === 'none' || removeUserForm.style.display === '') ? 'block' : 'none';
+        document.getElementById('addUserForm').style.display = 'none'; // Close the other form
+    }
 </script>
 
 </html>

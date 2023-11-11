@@ -16,12 +16,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/debosmitabedajna/Deskto
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 app.secret_key = 'secretivekeyagain'
-chat_messages = []
 curruser={}
 app.config['SESSION_COOKIE_SECURE'] = True  
 app.config['SESSION_COOKIE_PATH'] = '/'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=1) 
 socketio = SocketIO(app)
+
 
 
 class User(db.Model):
@@ -47,28 +47,33 @@ def login_post():
     if user:
         curruser['username'] = username
         curruser['designation'] = user.designation
-        session['username'] = username 
+        curruser['email'] = email
+        curruser['password'] = password
+        session['username'] = username
         return redirect('/dashboard')
     else:
         return render_template('login.html', error='Invalid credentials')
-    
+
 
 @app.route('/dashboard')
 def dashboard():
+    user=curruser
     wd = weatherData()
+    print(wd)
     flight_data = get_flight_data()
-    return render_template('dashboard.html', newvar=wd, flight_data=flight_data)
+    return render_template('dashboard.html', newvar=wd, flight_data=flight_data,user=user)
 
 @app.route('/logout')
 def logout():
     session.pop('username', None)
     return redirect('/') 
 
-def weatherData():
-    #url = "https://api.weatherapi.com/v1/current.json?key=2eb13cf49a934aabb3b74217230611&q=Kolkata&aqi=yes"
-    #data = post(url)
 
-    return jsonify({}) #data.json()
+def weatherData():
+    url = "https://api.weatherapi.com/v1/current.json?key=2eb13cf49a934aabb3b74217230611&q=Kolkata&aqi=yes"
+    data = post(url)
+
+    return data.json()
 
 def create_user(username, email, password, designation):
     with app.app_context():
@@ -81,7 +86,9 @@ def profile():
     user=curruser
     print(user)
     if request.method == 'POST':
-        if 'addUser' in request.form:
+        action = request.form.get('action')
+
+        if action == "addUser":
             new_username = request.form.get('username')
             new_email = request.form.get('email')
             new_password = request.form.get('password')
@@ -97,7 +104,9 @@ def profile():
                 flash(f'User {new_username} added successfully!', 'success')
                 print(f'User {new_username} added successfully!')
                 print("Received data:", new_username, new_email, new_password, new_designation)
-        elif 'removeUser' in request.form:
+
+
+        elif action == "removeUser":
             remove_username = request.form.get('removeUsername')
             user_to_remove = User.query.filter_by(username=remove_username).first()
 
@@ -113,27 +122,8 @@ def profile():
 
 @socketio.on('message')
 def handle_message(msg):
-    # Broadcast the received message to all clients
     emit('message', msg, broadcast=True)
 
-
-
-@app.route('/send_message', methods=['POST'])
-def send_message():
-    message = request.form.get('message')
-    if 'username' in session:
-        username = session['username']
-        chat_messages.append(f'{username}: {message}')
-
-        # Emit the message to all clients
-        socketio.emit('message', f'{username}: {message}', broadcast=True)
-
-    return jsonify({'status': 'success'})
-
-
-@app.route('/get_messages', methods=['GET'])
-def get_messages():
-    return jsonify({'messages': chat_messages})
 
 @app.route('/arrivals_departures')
 def arrivals_departures():
@@ -145,7 +135,7 @@ def arrivals_departures():
 def get_flight_data():
     api.set_flight_tracker_config(FlightTrackerConfig(limit="30"))
     flights = api.get_flights()
-    lst = []
+    lst=[]
     for flight in flights:
         flight_details = api.get_flight_details(flight)
         flight.set_flight_details(flight_details)
@@ -222,6 +212,9 @@ def create_user(username, email, password, designation):
         db.session.add(user)
         db.session.commit()
 
+@socketio.on('emergency')
+def handle_emergency():
+    emit('emergency_alert', broadcast=True)
 
 if __name__ == '__main__':
     with app.app_context():
