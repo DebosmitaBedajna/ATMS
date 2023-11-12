@@ -12,7 +12,7 @@ from flask_socketio import SocketIO, emit
 api = FlightRadar24API()
 
 app = Flask(__name__, static_url_path='/static')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/debosmitabedajna/Desktop/bkatms/OATMS/instance/users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 app.secret_key = 'secretivekeyagain'
