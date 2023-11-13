@@ -66,6 +66,64 @@
                     <p>No flight details available for the search.</p>
                 {% endif %}
             </section>
+            <section>
+                <h2>Schedule a Flight</h2>
+                <form action="/schedule" method="post">
+                    <label for="aircraftName">Aircraft Name:</label>
+                    <input type="text" id="aircraftName" name="aircraftName" required>
+    
+                    <label for="airline">Airline:</label>
+                    <input type="text" id="airline" name="airline" required>
+    
+                    <label for="originAirport">Origin Airport:</label>
+                    <input type="text" id="originAirport" name="originAirport" required>
+    
+                    <label for="destinationAirport">Destination Airport:</label>
+                    <input type="text" id="destinationAirport" name="destinationAirport" required>
+    
+                    <label for="terminal">Terminal:</label>
+                    <input type="text" id="terminal" name="terminal" required>
+    
+                    <label for="departureTime">Departure Time:</label>
+                    <input type="datetime-local" id="departureTime" name="departureTime" required>
+    
+                    <label for="arrivalTime">Arrival Time:</label>
+                    <input type="datetime-local" id="arrivalTime" name="arrivalTime" required>
+    
+                    <button type="submit">Schedule Flight</button>
+                </form>
+            </section>
+            <section>
+                <h2>Scheduled Flights</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Aircraft Name</th>
+                            <th>Airline</th>
+                            <th>Origin Airport</th>
+                            <th>Destination Airport</th>
+                            <th>Terminal</th>
+                            <th>Arrival</th>
+                            <th>Departure Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for flight in scheduled_flights %}
+                            <tr>
+                                <td>{{ flight['Aircraft Name'] }}</td>
+                                <td>{{ flight['Airline'] }}</td>
+                                <td>{{ flight['Origin Airport'] }}</td>
+                                <td>{{ flight['Destination Airport'] }}</td>
+                                <td>{{ flight['Terminal'] }}</td>
+                                <td>{{ flight['Arrival Time'] }}</td>
+                                <td>{{ flight['Departure Time'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            <section>
+    
         <section>
             <h2>Arrival Flights</h2>
             <table>

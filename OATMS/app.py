@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect, session,jsonify
+from datetime import datetime
+from flask import Flask, render_template, request, redirect, session
 from flask import flash
 from flask_sqlalchemy import SQLAlchemy
 from models import db, User
 from requests import post
 from flask_migrate import Migrate
-import json
 from datetime import timedelta
 from FlightRadar24 import FlightRadar24API, FlightTrackerConfig
 from flask_socketio import SocketIO, emit
@@ -13,6 +13,9 @@ api = FlightRadar24API()
 
 app = Flask(__name__, static_url_path='/static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_BINDS'] = {
+    'flights': 'sqlite:///flights.db'
+}
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 app.secret_key = 'secretivekeyagain'
@@ -129,7 +132,8 @@ def handle_message(msg):
 def arrivals_departures():
     arrival_flight_details = get_arrivals()
     departure_flight_details = get_departures()
-    return render_template('arrivals_departures.html', arr_flight_details=arrival_flight_details, dept_flights_details=departure_flight_details)
+    scheduled_flights_data = get_scheduled_flights()
+    return render_template('arrivals_departures.html', arr_flight_details=arrival_flight_details, dept_flights_details=departure_flight_details, scheduled_flights=scheduled_flights_data)
 
 
 def get_flight_data():
@@ -216,8 +220,61 @@ def create_user(username, email, password, designation):
 def handle_emergency():
     emit('emergency_alert', broadcast=True)
 
+class Flight(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    aircraft_name = db.Column(db.String(255), nullable=False)
+    airline = db.Column(db.String(255), nullable=False)
+    origin_airport = db.Column(db.String(255), nullable=False)
+    destination_airport = db.Column(db.String(255), nullable=False)
+    terminal = db.Column(db.String(10), nullable=False)
+    departure_time = db.Column(db.DateTime, nullable=False)
+    arrival_time = db.Column(db.DateTime, nullable=False)
+
+@app.route('/schedule', methods=['POST'])
+def schedule_flight():
+    if request.method == 'POST':
+        aircraft_name = request.form['aircraftName']
+        airline = request.form['airline']
+        origin_airport = request.form['originAirport']
+        destination_airport = request.form['destinationAirport']
+        terminal = request.form['terminal']
+        departure_time = datetime.strptime(request.form['departureTime'], '%Y-%m-%dT%H:%M')
+        arrival_time = datetime.strptime(request.form['arrivalTime'], '%Y-%m-%dT%H:%M')
+
+        new_flight = Flight(
+            aircraft_name=aircraft_name,
+            airline=airline,
+            origin_airport=origin_airport,
+            destination_airport=destination_airport,
+            terminal=terminal,
+            departure_time=departure_time,
+            arrival_time=arrival_time
+        )
+        db.session.add(new_flight)
+        db.session.commit()
+
+        return redirect('/arrivals_departures')
+    
+def get_scheduled_flights():
+    scheduled_flights = Flight.query.all()
+
+    scheduled_flights_data = [
+        {
+            'Aircraft Name': flight.aircraft_name,
+            'Airline': flight.airline,
+            'Origin Airport': flight.origin_airport,
+            'Destination Airport': flight.destination_airport,
+            'Terminal': flight.terminal,
+            'Departure Time': flight.departure_time.strftime('%Y-%m-%dT%H:%M'), 
+            'Arrival Time' : flight.arrival_time.strftime('%Y-%m-%dT%H:%M')
+        }
+        for flight in scheduled_flights
+    ]
+
+    return scheduled_flights_data
+    
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    # Use eventlet to run the application
     socketio.run(app, host='0.0.0.0', port=5000, debug=True, use_reloader=False)
