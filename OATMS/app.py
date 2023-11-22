@@ -193,16 +193,20 @@ def perform_search(search_input):
     search_results = []
 
     for flight in arr_flight_details:
-        if search_input.lower() in flight['Aircraft Name'].lower() or search_input.lower() in flight['Airline'].lower():
+        aircraft_name = flight.get('Aircraft Name')
+        airline = flight.get('Airline')
+
+        if aircraft_name and search_input.lower() in aircraft_name.lower() or airline and search_input.lower() in airline.lower():
             search_results.append(flight)
 
     for flight in dept_flights_details:
-        if search_input.lower() in flight['Aircraft Name'].lower() or search_input.lower() in flight['Airline'].lower():
+        aircraft_name = flight.get('Aircraft Name')
+        airline = flight.get('Airline')
+
+        if aircraft_name and search_input.lower() in aircraft_name.lower() or airline and search_input.lower() in airline.lower():
             search_results.append(flight)
 
     return search_results
-
-from flask import request, render_template
 
 @app.route('/search', methods=['POST'])
 def search():
